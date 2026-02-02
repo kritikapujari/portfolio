@@ -470,12 +470,147 @@
             color: var(--light);
             font-weight: bold;
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .social-link:hover {
             background: var(--primary);
             transform: translateY(-5px) scale(1.1);
             box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Email Popup Styles */
+        .email-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .email-popup-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .email-popup {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.5);
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .email-popup h3 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .email-display {
+            background: rgba(99, 102, 241, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .email-text {
+            color: var(--light);
+            font-size: 1.1rem;
+            word-break: break-all;
+            flex: 1;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-popup:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .popup-footer {
+            text-align: center;
+            color: var(--light);
+            opacity: 0.7;
+            font-size: 0.9rem;
+            margin-top: 1rem;
         }
 
         footer {
@@ -506,6 +641,18 @@
 
             .experience-header {
                 flex-direction: column;
+            }
+
+            .email-popup {
+                padding: 2rem;
+            }
+
+            .email-display {
+                flex-direction: column;
+            }
+
+            .copy-btn {
+                width: 100%;
             }
         }
     </style>
@@ -661,14 +808,100 @@
             <div class="social-links">
                 <a href="https://github.com/kritikapujari" class="social-link" title="GitHub">GH</a>
                 <a href="https://www.linkedin.com/in/kritika-pujari-566535291/" class="social-link" title="LinkedIn">IN</a>
-                <a href="Kritikapujari05@gmail.com" class="social-link" title="Email">@</a>
+                <a href="#" class="social-link email-trigger" title="Email">@</a>
             </div>
         </div>
     </section>
 
+    <!-- Email Popup -->
+    <div class="email-popup-overlay" id="emailPopup">
+        <div class="email-popup">
+            <button class="close-popup" id="closePopup">&times;</button>
+            <h3>📧 Get In Touch</h3>
+            <div class="email-display">
+                <span class="email-text" id="emailText">Kritikapujari05@gmail.com</span>
+                <button class="copy-btn" id="copyBtn">Copy</button>
+            </div>
+            <p class="popup-footer">Click the button to copy email to clipboard</p>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2026 Kritika Pujari. Crafted with passion and code.</p>
     </footer>
+
+    <script>
+        // Email popup functionality
+        const emailTrigger = document.querySelector('.email-trigger');
+        const emailPopup = document.getElementById('emailPopup');
+        const closePopup = document.getElementById('closePopup');
+        const copyBtn = document.getElementById('copyBtn');
+        const emailText = document.getElementById('emailText');
+
+        // Open popup
+        emailTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            emailPopup.classList.add('active');
+        });
+
+        // Close popup
+        closePopup.addEventListener('click', () => {
+            emailPopup.classList.remove('active');
+        });
+
+        // Close popup when clicking outside
+        emailPopup.addEventListener('click', (e) => {
+            if (e.target === emailPopup) {
+                emailPopup.classList.remove('active');
+            }
+        });
+
+        // Close popup with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && emailPopup.classList.contains('active')) {
+                emailPopup.classList.remove('active');
+            }
+        });
+
+        // Copy email to clipboard
+        copyBtn.addEventListener('click', async () => {
+            const email = emailText.textContent;
+            
+            try {
+                await navigator.clipboard.writeText(email);
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = email;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy email');
+                }
+                
+                document.body.removeChild(textArea);
+            }
+        });
+    </script>
 </body>
 
 </html>
